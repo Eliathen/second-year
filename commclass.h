@@ -28,7 +28,7 @@ void comm::give_name(){
     std::cout<<"Podaj swoje imie"<<std::endl;
 }
 void comm::menu(){
-    std::cout<<"1.Nowa gra\n2.Zobacz tablice wynikow"<<std::endl;
+    std::cout<<"1.Nowa gra(Manualnie)\n2.Nowa gra(Losowo)\n3.Zobacz tablice wynikow"<<std::endl;
 }
 void comm::game_over(std::string outcome, int points){
     if(outcome=="win")

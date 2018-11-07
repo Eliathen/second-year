@@ -28,7 +28,7 @@ int main(){
     while(1){
         comm::menu(); //komunikat
         std::cin>>choice;
-        if(choice==1) break;
+        if(choice==1 || choice==2) break;
         else player.load_points();
     }
     ship* playermap[10][10];
@@ -52,8 +52,14 @@ int main(){
     int i=0;
     for(it=list_of_player_ships.begin();it!=list_of_player_ships.end();++it){
         if(i==4 || i==7) length++;
-        player.place_ship_on_map(playermap, *it, length, map_printer);
-        i++;
+        if(choice==1){
+            player.place_ship_on_map(playermap, *it, length, map_printer);
+            i++;
+        }
+        if(choice==2){
+            player.random_place_ship_on_map(playermap, *it, length);
+            i++;
+        }
     }
     i=0;
     length=2;

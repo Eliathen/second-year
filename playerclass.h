@@ -27,6 +27,27 @@ public:
                 if(!done) comm::error_wrong_set_coords(); //komunikat
             }
         }
+    void random_place_ship_on_map(ship* playermap[][10], ship* ship, int length){
+        ship->setowner("player");
+        int row,col=0;
+        bool done=false;
+        std::string direction;
+        int dir;
+        while(!done){
+                dir=rand()%4;
+                if(dir==0)
+                    direction="gora";
+                if(dir==1)
+                    direction="dol";
+                if(dir==2)
+                    direction="lewo";
+                if(dir==3)
+                    direction="prawo";
+                row=rand()%10;
+                col=rand()%10;
+                done=ship->placeship(playermap, row, col, direction, length, ship);
+            }
+        }
 
     void shoot(ship* enemymap[][10]){
         int row,col;
