@@ -1,0 +1,30 @@
+                                                            Instrukcja
+Okno gry sklada sie z dwoch map 10x10. Lewa mapa nalezy do gracza, prawa do przeciwnika.
+
+Gracz oraz przeciwnik maja do dyspozycji:
+* cztery dwumasztowce
+* trzy trojmasztowce
+* dwa czteromasztowce
+
+Kazdy kwadracik to 'maszt'
+Statki nie moga sie stykac krawedziami, natomiast moga sie stykac rogami.
+Rozgrywke wygrywa ten, ktory jako pierwszy zniszczy wszystkie statki przeciwnika.
+Klawiszem ESC mozesz przerwac rozgrywke i powrocic do menu.
+
+Legenda:
+*zolty kwadracik oznacza ustawiony statek,
+*szary - puste pole,
+*niebieski - pole trafione, na ktorym nie bylo statku,
+*czerwony - zatopiony statek gracza,
+*zielony - zatopiony statek przeciwnika.
+
+Rozmieszczanie okretow:
+*Pierwszy maszt rozmieszczamy po przez klikniecie LPM na interesujace nas miejsce na mapie gracza. 
+*Rozmieszczanie pierwszego elementu mozesz anulowac klikajac PPM. 
+*Nastepnie wybieramy kierunek poprzez klikniecie odpowiedniej strzalki w lewo,w gore,w prawo,w dol. 
+*Jezeli pomimo klikniecia strzalki statek nie zostal ustawiony, 
+ oznacza to, ze w tym kierunku nie moze zostac ustawiony statek.
+
+Atak:
+   Aby zaatakowac przeciwnika kliknij na pole na mapie przeciwnika.
+
