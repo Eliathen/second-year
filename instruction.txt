@@ -6,7 +6,7 @@ Gracz oraz przeciwnik maja do dyspozycji:
 * trzy trojmasztowce
 * dwa czteromasztowce
 
-Kazdy kwadracik to 'maszt'
+Kazdy kwadracik to 'maszt':
 Statki nie moga sie stykac krawedziami, natomiast moga sie stykac rogami.
 Rozgrywke wygrywa ten, ktory jako pierwszy zniszczy wszystkie statki przeciwnika.
 Klawiszem ESC mozesz przerwac rozgrywke i powrocic do menu.
@@ -18,12 +18,12 @@ Legenda:
 *czerwony - zatopiony statek gracza,
 *zielony - zatopiony statek przeciwnika.
 
-Rozmieszczanie okretow:
-*Pierwszy maszt rozmieszczamy po przez klikniecie LPM na interesujace nas miejsce na mapie gracza. 
-*Rozmieszczanie pierwszego elementu mozesz anulowac klikajac PPM. 
-*Nastepnie wybieramy kierunek poprzez klikniecie odpowiedniej strzalki w lewo,w gore,w prawo,w dol. 
-*Jezeli pomimo klikniecia strzalki statek nie zostal ustawiony, 
- oznacza to, ze w tym kierunku nie moze zostac ustawiony statek.
+Rozmieszczanie okretow w trybie manualnym:
+Statek wybieramy po przez klikniecie i przytrzymanie LPM na pierwszy gorny masz statku.
+Nastepnie caly czas trzymajac LPM przesuwamy na miejsce, w ktorym chcemy umiescic statek.
+Kierunek statku zmieniamy klikajac PPM.
+Jezeli statek jest w kolorze czerwonym, to nie mozemy w tym miejscu naszego okretu,
+jezeli na zielono to mozemy. Statek umieszczamy puszczajac LPM.
 
 Atak:
    Aby zaatakowac przeciwnika kliknij na pole na mapie przeciwnika.

@@ -6,9 +6,11 @@
 int main(){
 
     Game *game = new Game();
+    if(!game){
+        //wyjatek
+    }
     game->Game::startGame();
     delete game;
-
     
     return 0;
 }

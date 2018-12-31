@@ -5,6 +5,10 @@
         enemyMap = new Map("AI");
         AI = new Enemy("AI");
         Gamer = new Player();
+        if(!Gamer || !AI || !enemyMap || !playerMap){
+            puts("XDDD");
+            //wyjatek
+        }
         AI->createShips(4,3,2);
         Gamer->createShips(4,3,2);
         setMenuOptions();
@@ -23,26 +27,27 @@
     void Game::startGame(){
         Gamer->setName("Gracz");
         sf::Texture gameTexture;
-        gameTexture.loadFromFile("pictures/gamemap.bmp");
         sf::Texture menuTexture;
+        sf::Texture blankBackgroundTexture;
+        sf::Texture resetTexture;
+        if((!gameTexture.loadFromFile("pictures/gamemap.bmp"))||
+        (!menuTexture.loadFromFile("pictures/menu.bmp"))||
+        (!blankBackgroundTexture.loadFromFile("pictures/clearBackground.bmp"))||
+        (!resetTexture.loadFromFile("pictures/reset.png"))){
+            //wyjatek
+        }
+        sf::Sprite reset;
+        sf::Sprite blankBackgroundSprite;
         sf::Sprite gameBackground;
         sf::Sprite menuBackground;
-        menuTexture.loadFromFile("pictures/menu.bmp");
         gameBackground.setTexture(gameTexture);
         menuBackground.setTexture(menuTexture);
-        sf::Texture blankTexture;
-        blankTexture.loadFromFile("pictures/clearBackground.bmp");
-        sf::Sprite blankSprite;
-        blankSprite.setTexture(blankTexture);
-        sf::Vector2i position;
-        sf::Texture resetTexture;
-        resetTexture.loadFromFile("pictures/reset.png");
-        sf::Sprite reset;
+        blankBackgroundSprite.setTexture(blankBackgroundTexture);
         reset.setTexture(resetTexture);
-        std::string getNick;
-        int status=1; //1 pobieranie wspolrzednych po kliknieciu
-        bool shipStatus = false;
-        bool firstFieldStatus=false;
+        sf::Vector2i position;
+        int status=1;
+        bool playersTurn = true;
+        int enemysTurn = 0;
         std::list<Ship*>::iterator it = Gamer->listOfShips.begin();
         auto cell = Gamer->getCoordinate(position.x, position.y);
         position.x = position.y = 0;
@@ -52,38 +57,67 @@
                 if (event.type == sf::Event::Closed){
                     window.close();
                     break;
+                }   
+                if(event.type==sf::Event::MouseMoved){
+                    if(menuStatus == staticSpread && Gamer->isSelected){
+                        position = sf::Mouse::getPosition(window);
+                        //Gamer->isPossible = Gamer->isPossibleToPlace(playerMap, position.x, position.y);
+                    }
+                }
+                if(event.type == sf::Event::MouseButtonReleased){
+                    if(event.mouseButton.button == sf::Mouse::Left){
+                        if(Gamer->currentShip && Gamer->isPossible==false && Gamer->mode == 0){
+                            Gamer->cancelAddingShip();
+                        }
+                        if(Gamer->currentShip && Gamer->isPossible==true && Gamer->mode == 0){
+                            cell = Gamer->getCoordinate(position.x, position.y);
+                            playerMap->setShipUsingXandY(Gamer->currentShip, std::get<0>(cell), std::get<1>(cell));
+                            Gamer->isSelected = false;
+                            Gamer->isPossible = false;
+                            Gamer->currentShip->isPlaced = PLACED;
+                            Gamer->currentShip = NULL;
+                        }
+
+                    }
                 }
                 if(event.type == sf::Event::MouseButtonPressed){
                     if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                         position = sf::Mouse::getPosition(window);
-                        if((menuStatus == staticSpread || menuStatus == autoSpread) && status==1){//status pobierania wspolrzednych
+                        if(status == 1 && Gamer->mode ==1){
                             position = sf::Mouse::getPosition(window);
-                            cell = Gamer->getCoordinate(position.x, position.y);
-                            status = 3;//status dodawania 1 masztu/atak;
+                            status = 3;
+                        }
+                        if(menuStatus == staticSpread){
+                            if(Gamer->isSelected==false){
+                                position = sf::Mouse::getPosition(window);
+                                Gamer->changeShipStatus(position.x,position.y);
+                            }
+                            if(Gamer->isSelected==true){
+                                position = sf::Mouse::getPosition(window);
+                                status = 3;
+                            }
                         }
                     }
                     if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
-                        if(menuStatus==staticSpread){
-                            playerMap->clearPlace(std::get<0>(cell), std::get<1>(cell));
-                            status = 1;
-                            showGame(gameBackground);
+                        if(menuStatus==staticSpread && Gamer->isSelected){
+                            Gamer->changeDirection();
                         }
                     }
                 }
                 if(event.type == sf::Event::KeyPressed){
                     switch(event.key.code){
-                        case sf::Keyboard::Escape://Problem!
+                        case sf::Keyboard::Escape:
                             if(menuStatus!=menu){
                                 menuStatus=menu;
-                                position.x=position.y = 0;
                                 Gamer->mode = 0;
+                                printStatment(" ");
                             }
                             break;
 
                         case sf::Keyboard::Up:
-                            if(menuStatus == staticSpread && status==2){//status pobierania kierunku
+                            if(menuStatus == staticSpread && status==2){
                                 Gamer->direction = 0;
-                                status = 4;//Dodany pierwszy maszt statku i pobrany kierunek
+                                status = 4;
                             }
                             break;
                         case sf::Keyboard::Right:
@@ -118,9 +152,7 @@
                     playerMap->clearMap();
                     enemyMap->clearMap();
                     AI->placeShips(enemyMap);
-                    std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                    printStatment(tekst);
-                    showGame(gameBackground);
+                    position.x=position.y = 0;
                 }
                 else if(position.x>210 && position.x <760 && position.y>255 && position.y <305){
                     newGame();
@@ -129,10 +161,12 @@
                     enemyMap->clearMap();
                     AI->placeShips(enemyMap);
                     showGame(gameBackground);
+                    position.x=position.y = 0;
                 }
                 else if(position.x>210 && position.x <760 && position.y>410 && position.y <460){
                     menuStatus = instruction;
-                    showInstruction(blankSprite);
+                    showInstruction(blankBackgroundSprite);
+                    position.x=position.y = 0;
 
                 }
                 else if(position.x>210 && position.x <760 && position.y>565 && position.y <615){
@@ -140,7 +174,7 @@
                 }
             } 
             if(menuStatus == instruction){
-                    showInstruction(blankSprite);
+                    showInstruction(blankBackgroundSprite);
 
             }
             if(menuStatus == autoSpread && Gamer->mode == 0){
@@ -154,72 +188,33 @@
                     showGame(gameBackground);
                 }
             }
-            if(menuStatus==staticSpread && it!=Gamer->listOfShips.end()){
-                while(it!=Gamer->listOfShips.end() && menuStatus == staticSpread && Gamer->mode == 0 && status!=1 && status !=2){//Umieszczanie statków użytkownika
-                    if(!(position.x>34 && position.x<400 && position.y>167 && position.y<538) && std::get<0>(cell)>0 && std::get<1>(cell)) 
-                        {
-                            status = 1;
-                            //std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                            //printStatment(tekst);
-                            
-                        }
-                    if(status == 3){//mozna ustawic 1 pole
-                        firstFieldStatus = playerMap->setFirstPartOfShip(*it, std::get<0>(cell), std::get<1>(cell));
-                        if(!firstFieldStatus){
-                            status = 1;
-                           // std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                           // printStatment(tekst);
-                        }
-                        else{
-                            status = 2;
-                            std::string tekst = "Wybierz kierunek w ktorym chcesz ustawic statek.";
-                            printStatment(tekst);
-                        } 
-                    showGame(gameBackground);
-                    }
-                    if(Gamer->direction >=0 && Gamer->direction <4 && firstFieldStatus == true && status == 4){//
-                            shipStatus = playerMap->setShipUsingXandY(*it, std::get<0>(cell), std::get<1>(cell), Gamer->direction);
-                            if(shipStatus){
-                                std::get<0>(cell)=std::get<1>(cell)=0;
-                                status = 1;
-                                //std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                                 //   printStatment(tekst);
-                                it++;
-                            }
-                            else{
-                                status = 2;
-                            }
-
-                    }
-                    if(it!=Gamer->listOfShips.end() && status == 1){
-                        std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                            printStatment(tekst);
-                    }
-                    else if(it==Gamer->listOfShips.end()){
-                        printStatment("Pora na Atak! Twoja tura: ");
-                    }
-                    showGame(gameBackground);
-                }
-            }       
-            if(it==Gamer->listOfShips.end() && shipStatus == true && Gamer->mode == 0){
+            if(menuStatus==staticSpread && Gamer->mode ==0){
+                showGameDuringStaticSpread(gameBackground, position.x, position.y);
+                Gamer->isPossible = Gamer->isPossibleToPlace(playerMap, position.x, position.y);
+                Gamer->printChosenShip(window, position.x, position.y);
+            }   
+            if(menuStatus == staticSpread && Gamer->allSet()==true && Gamer->mode == 0){
                 Gamer->mode = 1;
-                position.x = position.y = 0;
                 status = 1;
+                playersTurn = true;
+                position.x = position.y = 0;
+                printStatment("Pora na Atak. Twoja tura: ");
+                showGame(gameBackground);
             }
             while((AI->lifePoints!=0 && Gamer->lifePoints!=0) && Gamer->mode == 1 && status == 3){//atack
                 if(!(position.x>560 && position.x<920 && position.y>168 && position.y<540)) 
                 {
                     status = 1;
-                }
-                bool playersTurn=true;
-                int enemysTurn = 0;
-                    while(playersTurn){
+                }    
+                    while(playersTurn && status == 3){
                         if(status==3){
+                            cell = Gamer->getCoordinate(position.x, position.y);
                             playersTurn = Gamer->playerAttack(enemyMap, std::get<0>(cell), std::get<1>(cell));
                             if(playersTurn){
+                                //jesli trafione
                                 (AI->lifePoints)--;
-                                status = 1;
-                                enemysTurn = 0;   
+                                status = 1;;
+                                enemysTurn = 0;
                             }
                             else{
                                 //Jesli pudlo
@@ -229,10 +224,9 @@
                             }
                         }
                         else{
-                            playersTurn=false; 
                             status = 1;
-                            printStatment("Twoja tura: ");
-                        }               
+                            playersTurn = true;
+                        }             
                     showGame(gameBackground);    
                     }
                     while(enemysTurn!=0){
@@ -248,7 +242,7 @@
                         }
                         showGame(gameBackground);
                     }
-                    if(Gamer->lifePoints==0){//Problem z wyswietleniem kolejnego zwyciestwa/porazki
+                    if(Gamer->lifePoints==0){
                         //YOu lose
                         Gamer->mode = 2;
                         setResult(0);
@@ -270,18 +264,11 @@
                 position.x>410 && position.x <510 && 
                 position.y>275 && position.y <375){
                 position.x = position.y = 0;
-                it = Gamer->listOfShips.begin();
-                shipStatus = false;
-                firstFieldStatus=false;
                 status = 1;
                 newGame();
-                if(menuStatus==staticSpread){
-                    std::string tekst = "Ustawiasz statek o dlugosci "+std::to_string(((*it)->length))+" Wybierz pole na ktorym chcesz umiescic statek!";
-                    printStatment(tekst);
-                }
                 showGame(gameBackground);
             }
-       }
+        }
     
     }
     void Game::showGame(sf::Sprite gameBackground){
@@ -290,6 +277,17 @@
             window.draw(text);
             playerMap->printMap(window);
             enemyMap->printMap(window);
+            window.display();
+
+    }
+    void Game::showGameDuringStaticSpread(sf::Sprite gameBackground, int x,int y){
+            window.clear(sf::Color::White); 
+            window.draw(gameBackground);
+            window.draw(text);
+            playerMap->printMap(window);
+            enemyMap->printMap(window);
+            Gamer->printAllShips(window);
+            Gamer->printChosenShip(window, x, y);
             window.display();
 
     }
@@ -335,9 +333,9 @@
         }
     }
     void Game::setMenuOptions(){
-        optionInMenu[0]="Nowa Gra (manualnie)";
-        optionInMenu[1]="Nowa Gra (automatycznie)";
-        optionInMenu[2]="Instrukcja";
+        optionInMenu[0]="New Game (manual)";
+        optionInMenu[1]="New Game (automatic)";
+        optionInMenu[2]="Instruction";
         optionInMenu[3]="Quit";
     }
     void Game::showMenu(sf::Sprite menuBackground){
@@ -375,8 +373,8 @@
         enemyMap->clearMap();
         playerMap->clearMap();
         textResult.setString("");
-        //Zerowanie punktow;
         Gamer->resetLifePoints();
+        Gamer->resetAllShips();
         AI->placeShips(enemyMap);
         AI->resetLifePoints();
         Gamer->mode = 0;

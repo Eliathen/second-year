@@ -1,11 +1,5 @@
 #include "map.hpp"
 
-    /*
-        Map() : grid(0), fieldsStatus(0) {
-            //memset(grid, 0, 100*sizeof(int));
-            //memset(fieldsStatus, 0, 100*sizeof(int));
-    }
-    */
     Map::Map(std::string nazwa){
         memset(grid, 0, 144*sizeof(int));
         memset(fieldsStatus, 0, 144*sizeof(int));
@@ -20,15 +14,14 @@
     Map::~Map(){
     }
     void Map::printMap(sf::RenderWindow &window){
-        //fieldsStatus[5][5]=1;
         sf::Texture empty, destroyedPlayer, ship, miss, destroyedEnemy;
-        if(!empty.loadFromFile("pictures/EmptyField.png") ||
-            !destroyedPlayer.loadFromFile("pictures/destroyedPartShip.png") ||
+        if(!empty.loadFromFile("pictures/EmptyField.png")||
+            !destroyedPlayer.loadFromFile("pictures/destroyedPartShip.png")||
             !destroyedEnemy.loadFromFile("pictures/destroyedEnemyPartShip.png")||
             !ship.loadFromFile("pictures/ShipField.png")||
             !miss.loadFromFile("pictures/missAttack.png")){
-            //nie udalo sie wczytac tekstury;  
-            }
+            //wyjatek  
+        }
         sf::Sprite sprite;
         sprite.setScale(0.84,0.84);
         int xPlayer = 35, xEnemy = 560, Y = 168;
@@ -70,7 +63,7 @@
                         sprite.setPosition(xPlayer,Y);
                     }
                     else if(fieldsStatus[i][j]==3){
-                        //polet trafione. Bylo puste
+                        //pole trafione. Bylo puste
                         sprite.setTexture(miss);
                         sprite.setPosition(xPlayer,Y);
                     }
@@ -83,36 +76,39 @@
             Y= Y+37;
         }
     }
-    bool Map::checkUp(int x, int y, int len){
-        for(int i=1; i<len; ++i){       
-            if(fieldsStatus[x-i][y]!=0 ||
-                (fieldsStatus[x-i-1][y]!=0 && fieldsStatus[x-i-1][y]!=-1)||
-                (fieldsStatus[x-i][y+1]!=0 && fieldsStatus[x-i][y+1]!=-1)||
-                (fieldsStatus[x-i][y-1]!=0 && fieldsStatus[x-i][y-1]!=-1)){
+    bool Map::checkUp(int row, int col, int len){
+        for(int i=0; i<len; ++i){       
+            if(fieldsStatus[row-i][col]!=0 ||
+                (fieldsStatus[row-i+1][col]!=0 && fieldsStatus[row-i+1][col]!=-1)||
+                (fieldsStatus[row-i-1][col]!=0 && fieldsStatus[row-i-1][col]!=-1)||
+                (fieldsStatus[row-i][col+1]!=0 && fieldsStatus[row-i][col+1]!=-1)||
+                (fieldsStatus[row-i][col-1]!=0 && fieldsStatus[row-i][col-1]!=-1)){
                 return false;
             }
         }
         return true;
 
     }
-    bool Map::checkDown(int x, int y, int len){
-        for(int i=1; i<len; ++i){        
-            if(fieldsStatus[x+i][y]!=0 ||
-                (fieldsStatus[x+i+1][y]!=0 && fieldsStatus[x+i+1][y]!=-1)||
-                (fieldsStatus[x+i][y-1]!=0 && fieldsStatus[x+i][y-1]!=-1)||
-                (fieldsStatus[x+i][y+1]!=0 && fieldsStatus[x+i][y+1]!=-1)){
+    bool Map::checkDown(int row, int col, int len){
+        for(int i=0; i<len; ++i){        
+            if(fieldsStatus[row+i][col]!=0 ||
+                (fieldsStatus[row+i-1][col]!=0 && fieldsStatus[row+i-1][col]!=-1)||
+                (fieldsStatus[row+i+1][col]!=0 && fieldsStatus[row+i+1][col]!=-1)||
+                (fieldsStatus[row+i][col-1]!=0 && fieldsStatus[row+i][col-1]!=-1)||
+                (fieldsStatus[row+i][col+1]!=0 && fieldsStatus[row+i][col+1]!=-1)){
                 return false;
             }
         }
         return true;
 
     }
-    bool Map::checkLeft(int x, int y, int len){
-        for(int i=1; i<len; ++i){
-            if(fieldsStatus[x][y-i]!=0 ||
-                (fieldsStatus[x-1][y-i]!=0 && fieldsStatus[x-1][y-i]!=-1)||
-                (fieldsStatus[x+1][y-i]!=0 && fieldsStatus[x+1][y-i]!=-1)||
-                (fieldsStatus[x][y-i-1]!=0 && fieldsStatus[x][y-i-1]!=-1)
+    bool Map::checkLeft(int row, int col, int len){
+        for(int i=0; i<len; ++i){
+            if(fieldsStatus[row][col-i]!=0 ||
+                (fieldsStatus[row-1][col-i]!=0 && fieldsStatus[row-1][col-i]!=-1)||
+                (fieldsStatus[row+1][col-i]!=0 && fieldsStatus[row+1][col-i]!=-1)||
+                (fieldsStatus[row][col-i-1]!=0 && fieldsStatus[row][col-i-1]!=-1)||
+                (fieldsStatus[row][col-i+1]!=0 && fieldsStatus[row][col-i+1]!=-1)
                 ){
 
                 return false;
@@ -121,12 +117,13 @@
         }
         return true;
     }
-    bool Map::checkRight(int x, int y, int len){
-        for(int i=1; i<len; ++i){
-            if(fieldsStatus[x][y+i] ||
-                (fieldsStatus[x-1][y+i]!=0 && fieldsStatus[x-1][y+i]!=-1)||
-                (fieldsStatus[x+1][y+i]!=0 && fieldsStatus[x+1][y+i]!=-1)||
-                (fieldsStatus[x][y+i+1]!=0 && fieldsStatus[x][y+i+1]!=-1)
+    bool Map::checkRight(int row, int col, int len){
+        for(int i=0; i<len; ++i){
+            if(fieldsStatus[row][col+i] ||
+                (fieldsStatus[row-1][col+i]!=0 && fieldsStatus[row-1][col+i]!=-1)||
+                (fieldsStatus[row+1][col+i]!=0 && fieldsStatus[row+1][col+i]!=-1)||
+                (fieldsStatus[row][col+i+1]!=0 && fieldsStatus[row][col+i+1]!=-1)||
+                (fieldsStatus[row][col+i-1]!=0 && fieldsStatus[row][col+i-1]!=-1)
                 ){
 
                 return false;
@@ -136,33 +133,33 @@
         return true;
 
     }
-    bool Map::setShipUsingXandY(Ship *ship, int x, int y, int director){
-        switch(director){
+    bool Map::setShipUsingXandY(Ship *ship, int row, int col){
+        switch(ship->dir){
             case 0:{
-                if(checkUp(x,y, ship->length)){
-                    for(int i=1; i<ship->length; ++i){
-                        fieldsStatus[x-i][y]=1;
-                        grid[x-i][y]=ship;
+                if(checkUp(row,col, ship->length)){
+                    for(int i=0; i<ship->length; ++i){
+                        fieldsStatus[row-i][col]=1;
+                        grid[row-i][col]=ship;
                     }
                     return true;
                 }
                 return false;
             }
             case 1:{
-                if(checkRight(x,y,ship->length)){
-                    for(int i=1; i<ship->length; ++i){
-                        fieldsStatus[x][y+i]=1;
-                        grid[x][y+i]= ship;
+                if(checkRight(row,col,ship->length)){
+                    for(int i=0; i<ship->length; ++i){
+                        fieldsStatus[row][col+i]=1;
+                        grid[row][col+i]= ship;
                     }
                     return true;
                 }
                 return false;
             }
             case 2:{
-                if(checkDown(x,y,ship->length)){
-                    for(int i=1; i<ship->length; ++i){
-                        fieldsStatus[x+i][y]=1;
-                        grid[x+i][y]= ship;
+                if(checkDown(row,col,ship->length)){
+                    for(int i=0; i<ship->length; ++i){
+                        fieldsStatus[row+i][col]=1;
+                        grid[row+i][col]= ship;
                         
                     }
                     return true;
@@ -170,10 +167,10 @@
                 return false;
             }
             case 3:{
-                if(checkLeft(x,y,ship->length)){
-                    for(int i=1; i<ship->length; ++i){
-                        fieldsStatus[x][y-i]=1;
-                        grid[x][y-i]= ship;
+                if(checkLeft(row,col,ship->length)){
+                    for(int i=0; i<ship->length; ++i){
+                        fieldsStatus[row][col-i]=1;
+                        grid[row][col-i]= ship;
                     }
                     return true;
                 }
@@ -185,22 +182,10 @@
 
         return false;
     }
-    bool Map::setFirstPartOfShip(Ship *ship, int x, int y){
-        if(fieldsStatus[x][y]==0 &&
-            (fieldsStatus[x-1][y]==0 || fieldsStatus[x-1][y]==-1) &&
-            (fieldsStatus[x+1][y]==0 || fieldsStatus[x+1][y]==-1) &&
-            (fieldsStatus[x][y-1]==0 || fieldsStatus[x][y-1]==-1) &&
-            (fieldsStatus[x][y+1]==0 || fieldsStatus[x][y+1]==-1)){
-            fieldsStatus[x][y]=1;
-            grid[x][y]=ship;
-            return true;
-        }
-            return false;
-    }
-    void Map::clearPlace(int x,int y){
-        if(x>0 && x<11 && y>0 && y<11)
-        fieldsStatus[x][y]=0;
-        grid[x][y]=NULL;
+    void Map::clearPlace(int row,int col){
+        if(row>0 && row<11 && col>0 && col<11)
+        fieldsStatus[row][col]=0;
+        grid[row][col]=NULL;
     }  
     void Map::clearMap(){
         memset(grid, 0, 144*sizeof(int));

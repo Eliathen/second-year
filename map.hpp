@@ -23,8 +23,7 @@ class Map{
     bool checkDown(int x, int y, int len);
     bool checkLeft(int x, int y, int len);
     bool checkRight(int x, int y, int len);
-    bool setShipUsingXandY(Ship *ship, int x, int y, int direction);
-    bool setFirstPartOfShip(Ship *ship, int x, int y);
+    bool setShipUsingXandY(Ship *ship, int x, int y);
     void clearPlace(int x,int y);
     void clearMap();
 };

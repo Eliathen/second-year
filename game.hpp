@@ -11,7 +11,6 @@
 #include "ship.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
-
 enum menu{menu, staticSpread, autoSpread, instruction, quit};
 
 class Game{
@@ -20,7 +19,6 @@ class Game{
     Map *enemyMap;
     Player *Gamer;
     Enemy *AI;
-    //bool result;
     private:
     std::string optionInMenu[4];
     sf::Text text;
@@ -31,7 +29,6 @@ class Game{
     Game();
     ~Game();
     void startGame();
-    void DisplayGame();
     void printStatment(std::string statment);
     void setResult(int result);
     void showGame(sf::Sprite gameBackground);
@@ -41,6 +38,7 @@ class Game{
     void showInstruction(sf::Sprite clearBackground);
     void newGame();
     void downloadInstruction(std::string *inst);
+    void showGameDuringStaticSpread(sf::Sprite gameBackground, int x, int y);
 };
 
 #endif

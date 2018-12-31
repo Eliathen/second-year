@@ -6,7 +6,6 @@
         prevHit = false;
     }
     Enemy::~Enemy(){
-            //usuwanie listy statkow
             for(std::list<Ship*>::iterator it = listOfShips.begin(); it!=listOfShips.end(); it++){
                 delete *it;
             }
@@ -14,18 +13,36 @@
     void Enemy::createShips(int two, int three, int four){
         for(int j=0; j<two; j++){
             Ship* player_ship=new Ship(2);
+            if(!player_ship){
+                //wyjatek
+            }
             listOfShips.push_back(player_ship);
             lifePoints=lifePoints+player_ship->hitPoints;
+            player_ship->isPlaced = 0;
+            player_ship->X = 0;
+            player_ship->Y = 0;
         }
         for(int j=0; j<three; j++){
             Ship* player_ship=new Ship(3);
+            if(!player_ship){
+                //wyjatek
+            }
             listOfShips.push_back(player_ship); 
             lifePoints=lifePoints+player_ship->hitPoints;
+            player_ship->isPlaced = 0;
+            player_ship->X = 0;
+            player_ship->Y = 0;
         }
         for(int j=0; j<four; j++){
             Ship* player_ship=new Ship(4);
+            if(!player_ship){
+                //wyjatek
+            }
             listOfShips.push_back(player_ship);
             lifePoints=lifePoints+player_ship->hitPoints;
+            player_ship->isPlaced = 0;
+            player_ship->X = 0;
+            player_ship->Y = 0;
         }
     }
     void Enemy::resetLifePoints(){
@@ -35,31 +52,29 @@
         }
     }
     void Enemy::placeShips(Map *enemyMap){
-        bool firstFieldStatus;
-        std::list<Ship*>::iterator it = listOfShips.begin();
         auto random = std::bind(std::uniform_int_distribution<>(1,10),
         std::mt19937(time(NULL)));
-        while(it!=listOfShips.end())
-        {
+        std::list<Ship*>::iterator it = listOfShips.begin();
+        while(it!=listOfShips.end()){
+            bool done=false;
+            while(!done){
                 int numberOfTry = 0;
-                int row, col=0;
+                int row=0;
+                int col=0;
                 row=random();
                 col=random();
-                firstFieldStatus = enemyMap->setFirstPartOfShip(*it,row, col);
-                bool done=false;
-                while(!done && firstFieldStatus == true){
                     if(numberOfTry==4){
-                        enemyMap->clearPlace(row,col);
-                        break;
+                        row=random();
+                        col=random();
                     }
-                    direction=std::rand()%4;
-                    done=enemyMap->setShipUsingXandY(*it, row, col, direction);
+                    (*it)->dir = std::rand()%4;
+                    done=enemyMap->setShipUsingXandY(*it, row, col);
                     if(done==true){
                         it++;
                     }
                     numberOfTry++;
-                }
             }
+        }
     }
     int Enemy::enemyAttack(Map *playerMap){
         if(!prevHit){
@@ -67,7 +82,6 @@
         }
         else{
             int isShoot;
-            //sprawdz w gore
             if((shootX-1)>0 && checkedUp==false){
                 isShoot = shootUp(playerMap);
                 checkedUp = true;
@@ -78,7 +92,6 @@
                 checkedLeft=checkedRight = true;
                 return isShoot;
             }
-            //Sprawdz w prawo
             if((shootY+1)<11 && checkedRight==false){
                 isShoot = shootRight(playerMap);
                 checkedRight = true;
@@ -89,7 +102,6 @@
                 checkedDown=checkedUp = true;
                 return isShoot;
             }
-            //Sprawdz w dol
             if((shootX+1)<11 && checkedDown==false){
                 isShoot = shootDown(playerMap);
                 checkedDown = true;
@@ -100,7 +112,6 @@
                 checkedLeft=checkedRight = true; 
                 return isShoot;
             }
-            //Sprawdz w lewo
             if((shootY-1)>0 && checkedLeft==false){
                 isShoot = shootLeft(playerMap);
                 checkedLeft = true;
