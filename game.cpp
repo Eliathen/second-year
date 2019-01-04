@@ -1,41 +1,114 @@
+/*! \file game.cpp
+    \brief Zawiera definicje metod klasy Game
+*/
 #include "game.hpp"
+    //! Konstruktor
+    /*!
+        Zainicjowanie pol klasy wartosciami
+    */
     Game::Game() {
         window.create(sf::VideoMode(960, 720, 60), "BattleShips!", sf::Style::Close);
         playerMap = new Map("Gracz");
         enemyMap = new Map("AI");
         AI = new Enemy("AI");
         Gamer = new Player();
-        if(!Gamer || !AI || !enemyMap || !playerMap){
-            puts("XDDD");
-            //wyjatek
-        }
+        try{
+            if(!Gamer) throw "Error during creation of player! Application will close in";
+            if(!AI) throw "Error during creation of AI! Application will close in";
+            if(!enemyMap) throw "Error during creation of Enemy map! Application will close in";
+            if(!playerMap) throw "Error during creation of Player map! Application will close in";
+            } catch (const char *err){
+                sf::RenderWindow exception_window;
+                exception_window.create(sf::VideoMode(550, 200, 60), "Critical error!", sf::Style::Close);
+                sf::Text error_text;
+                sf::Text counting;
+                sf::Font font;
+                font.loadFromFile("pictures/arial.ttf");
+                int c=5;
+                counting.setString(to_string(c));
+                counting.setFont(font);
+                counting.setCharacterSize(20);
+                counting.setPosition(20,80);
+                error_text.setString(err);
+                error_text.setFont(font);
+                error_text.setCharacterSize(20);
+                error_text.setPosition(20,60);
+                while(exception_window.isOpen()){
+                    counting.setString(to_string(c));
+                    exception_window.draw(error_text);
+                    exception_window.draw(counting);
+                    exception_window.display();
+                    sf::sleep(sf::milliseconds(1000));
+                    c--;
+                    counting.setString(to_string(c));
+                    if(c==0){
+                        exception_window.close();
+                    }
+                    exception_window.clear();
+                }
+                exit(0);
+                }
         AI->createShips(4,3,2);
         Gamer->createShips(4,3,2);
         setMenuOptions();
         font.loadFromFile("pictures/arial.ttf");
         menuStatus = 0;
         Gamer->mode = 0;
-        
+
     }
+    //! Destruktor
+    /*!
+        Usuwa wskazniki na obiekty bedace polami klasy game
+    */
     Game::~Game(){
         delete Gamer;
         delete AI;
         delete enemyMap;
         delete playerMap;
     }
-
+    //! Glowna metoda kontrolujaca i obslugujaca obecna sesje gry
     void Game::startGame(){
         Gamer->setName("Gracz");
         sf::Texture gameTexture;
         sf::Texture menuTexture;
         sf::Texture blankBackgroundTexture;
         sf::Texture resetTexture;
-        if((!gameTexture.loadFromFile("pictures/gamemap.bmp"))||
-        (!menuTexture.loadFromFile("pictures/menu.bmp"))||
-        (!blankBackgroundTexture.loadFromFile("pictures/clearBackground.bmp"))||
-        (!resetTexture.loadFromFile("pictures/reset.png"))){
-            //wyjatek
-        }
+        try{
+            if(!gameTexture.loadFromFile("pictures/gamemap.bmp")) throw "Error during loading gamemap.bmp! Application will close in";
+            if(!menuTexture.loadFromFile("pictures/menu.bmp")) throw "Error during loading menu.bmp! Application will close in";
+            if(!blankBackgroundTexture.loadFromFile("pictures/clearBackground.bmp")) throw "Error during loading clearBackground.bmp! Application will close in";
+            if(!resetTexture.loadFromFile("pictures/reset.png")) throw "Error during loading reset.png! Application will close in";
+            } catch (const char *err){
+                sf::RenderWindow exception_window;
+                exception_window.create(sf::VideoMode(550, 200, 60), "Critical error!", sf::Style::Close);
+                sf::Text error_text;
+                sf::Text counting;
+                sf::Font font;
+                font.loadFromFile("pictures/arial.ttf");
+                int c=5;
+                counting.setString(to_string(c));
+                counting.setFont(font);
+                counting.setCharacterSize(20);
+                counting.setPosition(20,80);
+                error_text.setString(err);
+                error_text.setFont(font);
+                error_text.setCharacterSize(20);
+                error_text.setPosition(20,60);
+                while(exception_window.isOpen()){
+                    counting.setString(to_string(c));
+                    exception_window.draw(error_text);
+                    exception_window.draw(counting);
+                    exception_window.display();
+                    sf::sleep(sf::milliseconds(1000));
+                    c--;
+                    counting.setString(to_string(c));
+                    if(c==0){
+                        exception_window.close();
+                    }
+                    exception_window.clear();
+                }
+                exit(0);
+                }
         sf::Sprite reset;
         sf::Sprite blankBackgroundSprite;
         sf::Sprite gameBackground;
@@ -57,7 +130,7 @@
                 if (event.type == sf::Event::Closed){
                     window.close();
                     break;
-                }   
+                }
                 if(event.type==sf::Event::MouseMoved){
                     if(menuStatus == staticSpread && Gamer->isSelected){
                         position = sf::Mouse::getPosition(window);
@@ -138,7 +211,7 @@
                                 status = 4;
                             }
                             break;
-                        default: 
+                        default:
                             break;
                     }
                 }
@@ -172,7 +245,7 @@
                 else if(position.x>210 && position.x <760 && position.y>565 && position.y <615){
                     window.close();
                 }
-            } 
+            }
             if(menuStatus == instruction){
                     showInstruction(blankBackgroundSprite);
 
@@ -192,7 +265,7 @@
                 showGameDuringStaticSpread(gameBackground, position.x, position.y);
                 Gamer->isPossible = Gamer->isPossibleToPlace(playerMap, position.x, position.y);
                 Gamer->printChosenShip(window, position.x, position.y);
-            }   
+            }
             if(menuStatus == staticSpread && Gamer->allSet()==true && Gamer->mode == 0){
                 Gamer->mode = 1;
                 status = 1;
@@ -202,10 +275,10 @@
                 showGame(gameBackground);
             }
             while((AI->lifePoints!=0 && Gamer->lifePoints!=0) && Gamer->mode == 1 && status == 3){//atack
-                if(!(position.x>560 && position.x<920 && position.y>168 && position.y<540)) 
+                if(!(position.x>560 && position.x<920 && position.y>168 && position.y<540))
                 {
                     status = 1;
-                }    
+                }
                     while(playersTurn && status == 3){
                         if(status==3){
                             cell = Gamer->getCoordinate(position.x, position.y);
@@ -219,15 +292,15 @@
                             else{
                                 //Jesli pudlo
                                 playersTurn=false;
-                                enemysTurn = 1;  
-                                printStatment("Tura przeciwnika: ");     
+                                enemysTurn = 1;
+                                printStatment("Tura przeciwnika: ");
                             }
                         }
                         else{
                             status = 1;
                             playersTurn = true;
-                        }             
-                    showGame(gameBackground);    
+                        }
+                    showGame(gameBackground);
                     }
                     while(enemysTurn!=0){
                         usleep(700000);
@@ -238,7 +311,7 @@
                         if(enemysTurn==0){
                             status = 1;
                             printStatment("Twoja tura: ");
-                            playersTurn = true;      
+                            playersTurn = true;
                         }
                         showGame(gameBackground);
                     }
@@ -261,7 +334,7 @@
                 showGame(gameBackground, reset);
             }
             if(Gamer->mode == 2 &&
-                position.x>410 && position.x <510 && 
+                position.x>410 && position.x <510 &&
                 position.y>275 && position.y <375){
                 position.x = position.y = 0;
                 status = 1;
@@ -269,10 +342,14 @@
                 showGame(gameBackground);
             }
         }
-    
+
     }
+    //! Metoda odswiezajaca okno
+    /*!
+        \param gameBackground sprite tla gry
+    */
     void Game::showGame(sf::Sprite gameBackground){
-            window.clear(sf::Color::White); 
+            window.clear(sf::Color::White);
             window.draw(gameBackground);
             window.draw(text);
             playerMap->printMap(window);
@@ -280,8 +357,14 @@
             window.display();
 
     }
+    //! Metoda odswiezajaca okno podczas rozstawiania statkow
+    /*!
+        \param gameBackground sprite tla gry
+        \param x wspolrzedna x myszki
+        \param y wspolrzedna y myszki
+    */
     void Game::showGameDuringStaticSpread(sf::Sprite gameBackground, int x,int y){
-            window.clear(sf::Color::White); 
+            window.clear(sf::Color::White);
             window.draw(gameBackground);
             window.draw(text);
             playerMap->printMap(window);
@@ -291,8 +374,13 @@
             window.display();
 
     }
+    //! Metoda odswiezajaca okno wyswietlajaca napis
+    /*!
+        \param gameBackground sprite tla gry
+        \param reset sprite resetujacy
+    */
     void Game::showGame(sf::Sprite gameBackground, sf::Sprite reset){
-            window.clear(sf::Color::White); 
+            window.clear(sf::Color::White);
             window.draw(gameBackground);
             window.draw(text);
             if(Gamer->mode == 2){
@@ -307,6 +395,10 @@
             enemyMap->printMap(window);
             window.display();
     }
+    //! Metoda ustawiajaca napis
+    /*!
+        \param statment string do ustawienia
+    */
     void Game::printStatment(std::string statment){
         text.setString(statment);
         text.setFont(font);
@@ -315,6 +407,10 @@
         text.setFillColor(sf::Color::Black);
 
     }
+    //! Metoda wyswietlajaca wynik w zaleznosci od wygranej lub przegranej
+    /*!
+        \param result decyduje o wyswietlaja wiadomosci informujacej o wyniku gry
+    */
     void Game::setResult(int result){
         font.loadFromFile("pictures/arial.ttf");
         textResult.setFont(font);
@@ -332,15 +428,20 @@
         else{
         }
     }
+    //! Metoda ustawiajaca opcje menu w tablicy
     void Game::setMenuOptions(){
         optionInMenu[0]="New Game (manual)";
         optionInMenu[1]="New Game (automatic)";
         optionInMenu[2]="Instruction";
         optionInMenu[3]="Quit";
     }
+    //! Metoda wyswietlajaca menu
+    /*!
+        \param menuBackground sprite tla menu
+    */
     void Game::showMenu(sf::Sprite menuBackground){
         sf::Text menuText[4];
-        window.clear(sf::Color::White); 
+        window.clear(sf::Color::White);
         window.draw(menuBackground);
         int x=230;
         int y=105;
@@ -355,8 +456,12 @@
         }
         window.display();
     }
+    //! Metoda wyswietlajaca instrukcje do gry
+    /*!
+        \param blankBackground sprite tla instrukcji
+    */
     void Game::showInstruction(sf::Sprite blankBackground){
-        window.clear(sf::Color::White); 
+        window.clear(sf::Color::White);
         window.draw(blankBackground);
         sf::Text instruction;
         instruction.setFont(font);
@@ -369,6 +474,7 @@
         window.draw(instruction);
         window.display();
     }
+    //! Metoda zaczynajaca nowa gre
     void Game::newGame(){
         enemyMap->clearMap();
         playerMap->clearMap();
@@ -379,14 +485,47 @@
         AI->resetLifePoints();
         Gamer->mode = 0;
     }
+    //! Metoda pobierajaca instrukcje z pliku
+    /*!
+        \param inst wskaznik na string instrukcji do modyfikacji
+    */
     void Game::downloadInstruction(std::string *inst){
         std::ifstream file;
         std::string tmpstring;
         file.open("instruction.txt");
-        if(!file.is_open()){
-            //wyjatek
-        }
-        else{
+        try{
+            if(!file.is_open()) throw "Error during opening instruction.txt! Application will close in";
+            } catch (const char *err){
+                sf::RenderWindow exception_window;
+                exception_window.create(sf::VideoMode(550, 200, 60), "Critical error!", sf::Style::Close);
+                sf::Text error_text;
+                sf::Text counting;
+                sf::Font font;
+                font.loadFromFile("pictures/arial.ttf");
+                int c=5;
+                counting.setString(to_string(c));
+                counting.setFont(font);
+                counting.setCharacterSize(20);
+                counting.setPosition(20,80);
+                error_text.setString(err);
+                error_text.setFont(font);
+                error_text.setCharacterSize(20);
+                error_text.setPosition(20,60);
+                while(exception_window.isOpen()){
+                    counting.setString(to_string(c));
+                    exception_window.draw(error_text);
+                    exception_window.draw(counting);
+                    exception_window.display();
+                    sf::sleep(sf::milliseconds(1000));
+                    c--;
+                    counting.setString(to_string(c));
+                    if(c==0){
+                        exception_window.close();
+                    }
+                    exception_window.clear();
+                }
+                exit(0);
+                }
             while(!file.eof()){
                 getline(file, tmpstring);
                 *inst+=tmpstring;
@@ -395,4 +534,3 @@
             }
             file.close();
         }
-    }

@@ -1,19 +1,31 @@
+/*! \file map.hpp
+    \brief Zawiera deklaracje metod, oraz pola klasy Map
+*/
 #ifndef map_H
 #define map_H
 #include <iostream>
 #include <cstdio>
 #include <cstring>
 #include <SFML/Graphics.hpp>
-
+#include "to_string.hpp"
 #include "ship.hpp"
-
-enum {UP, RIGHT, DOWN, LEFT};
-
+/** Enum zawierajacy kierunki na mapie
+*/
+enum {
+    UP,     /**<gora */
+    RIGHT,  /**<prawo */
+    DOWN,   /**<dol */
+    LEFT    /**<lewo*/
+    };
+//! Klasa Map
+/*!
+    Zawiera odpowiednie pola oraz metody potrzebne do funkcjonowania map gracza oraz przeciwnika
+*/
 class Map{
     public:
-    Ship *grid[12][12];
-    int fieldsStatus[12][12];
-    std::string name;
+    Ship *grid[12][12];         /*!< tablica wskaznikow na statek */
+    int fieldsStatus[12][12];   /*!< tablica stanu pol */
+    std::string name;           /*!< nazwa wlasciciela mapy */
 
    public:
     Map(std::string nazwa);

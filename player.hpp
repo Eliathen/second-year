@@ -1,30 +1,46 @@
+/*! \file player.hpp
+    \brief Zawiera deklaracje metod, oraz pola klasy Player
+*/
 #ifndef Player_H
 #define Player_H
 #include <iostream>
 #include <cstdio>
 #include <cstring>
 #include <list>
-#include <tuple> 
+#include <tuple>
 #include <functional>
 #include <random>
 #include <SFML/Graphics.hpp>
 
 #include "ship.hpp"
 #include "map.hpp"
-
-enum {SPREAD, FIRE};
-enum dir{dUp, dRight, dDown, dLeft};
-
+/** Enum zawierajacy czynnosci gracza
+*/
+enum {
+    SPREAD, /**<Rozstawianie */
+    FIRE    /**<Strzelanie */
+    };
+/** Enum zawierajacy kierunki
+*/
+enum dir{
+    dUp,    /**<Gora */
+    dRight, /**<Prawo */
+    dDown,  /**<Dol */
+    dLeft}; /**<Lewo */
+//! Klasa Player
+/*!
+    Zawiera odpowiednie pola oraz metody potrzebne do funkcjonowania gracza
+*/
 class Player{
     public:
-    std::string name;
-    int lifePoints;
-    int mode;
-    int direction;
-    bool isSelected;
-    bool isPossible;
-    Ship *currentShip;
-    std::list <Ship *>listOfShips;
+    std::string name;                   /*!<Nazwa gracza */
+    int lifePoints;                     /*!<Pola zajete przez gracza  */
+    int mode;                           /*!<Tryb w jakim znajduje sie gracz  */
+    int direction;                      /*!<Kierunek statku  */
+    bool isSelected;                    /*!<Zawiera informacje czy gracz wybral statek  */
+    bool isPossible;                    /*!<Zawiera informacje o tym czy w miejscu kursora mozna umiescic statek  */
+    Ship *currentShip;                  /*!<Wskaznik na aktualnie rozmieszczany statek  */
+    std::list <Ship *>listOfShips;      /*!<Lista wskaznikow na statek gracza  */
 
     bool playerAttack(Map *enemyMap, int x, int y);
     Player();
